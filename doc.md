@@ -54,6 +54,31 @@
 ### flymake導入
 実際に、C言語の静的コード解析ツールであるflymakeをSolaris端末のemacsに導入してみましょう。以下でステップに分けて説明を行います。
 
+```sh
+$ emacs $HOME/.emacs.d/init.el
+```
+
+でEmacsの設定ファイルを開き、ファイルの末尾に以下のスクリプトを追加します。
+
+```script
+;; flymake
+(require 'flymake)
+(defun flymake-c-init ()
+  (let* ((temp-file   (flymake-init-create-temp-buffer-copy
+                       'flymake-create-temp-inplace))
+         (local-file  (file-relative-name
+                       temp-file
+                       (file-name-directory buffer-file-name))))
+    (list "gcc" (list  "-Wall" "-Wextra" "-fsyntax-only" local-file))))
+(push '("\\.c$" flymake-c-init) flymake-allowed-file-name-masks)
+(add-hook 'c-mode-hook
+          '(lambda ()
+             (flymake-mode t)))
+```
+
+このスクリプトはSlackの #general チャンネルにもアップロードしておいたので、そこからコピペすることも出来ます。
+貼り付けたらEmacsを閉じます。
+これでflymakeの導入は終了です。
 
 
 ### 参考
